@@ -1,6 +1,8 @@
 import express from "express";
 import {
+  forgotPasswordController,
   getAllOrdersController,
+  getAllUsersController,
   getOrdersController,
   loginController,
   orderStatusController,
@@ -9,7 +11,7 @@ import {
   updateProfileController,
 } from "../controllers/authController.js";
 
-import { isAdmin, requireSignIn } from "../middlewares/authMiddeware.js";
+import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 
 //router object
 const router = express.Router();
@@ -21,6 +23,9 @@ router.post("/register", registerController);
 
 //LOGIN || POST
 router.post("/login", loginController);
+
+//Forgot Password || POST
+router.post("/forgot-password", forgotPasswordController);
 
 //test routes
 router.get("/test", requireSignIn,isAdmin, testController);
@@ -50,6 +55,10 @@ router.put(
   isAdmin,
   orderStatusController
 );
+
+//all users
+router.get("/all-users", requireSignIn, isAdmin, getAllUsersController);
+
 
 export default router;
 

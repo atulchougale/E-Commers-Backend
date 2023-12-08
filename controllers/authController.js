@@ -7,7 +7,7 @@ import JWT from "jsonwebtoken";
 
 export const registerController = async (req, res) => {
     try {
-      const { name, email, password, phone, address } = req.body;
+      const { name, email, password, phone, address ,answer} = req.body;
       //validations
       if (!name) {
         return res.send({ error: "Name is Required" });
@@ -23,6 +23,9 @@ export const registerController = async (req, res) => {
       }
       if (!address) {
         return res.send({ error: "Address is Required" });
+      }
+      if (!answer) {
+        return res.send({ error: "Answer is Required" });
       }
       //check user
       const existingUser = await userModel.findOne({ email });
@@ -42,6 +45,7 @@ export const registerController = async (req, res) => {
         phone,
         address,
         password: hashedPassword,
+        answer,
       }).save();
   
       res.status(201).send({
@@ -99,6 +103,7 @@ export const loginController = async (req, res) => {
         email: user.email,
         phone: user.phone,
         address: user.address,
+        role: user.role,
       },
       token,
     });
@@ -118,7 +123,7 @@ export const forgotPasswordController = async (req, res) => {
   try {
     const { email, answer, newPassword } = req.body;
     if (!email) {
-      res.status(400).send({ message: "Emai is required" });
+      res.status(400).send({ message: "Email is required" });
     }
     if (!answer) {
       res.status(400).send({ message: "answer is required" });
@@ -161,14 +166,14 @@ export const testController = (req, res) => {
   }
 };
 
-//update prfole
+//update profile
 export const updateProfileController = async (req, res) => {
   try {
     const { name, email, password, address, phone } = req.body;
     const user = await userModel.findById(req.user._id);
     //password
     if (password && password.length < 6) {
-      return res.json({ error: "Passsword is required and 6 character long" });
+      return res.json({ error: "Password is required and 6 character long" });
     }
     const hashedPassword = password ? await hashPassword(password) : undefined;
     const updatedUser = await userModel.findByIdAndUpdate(
@@ -208,11 +213,12 @@ export const getOrdersController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error WHile Geting Orders",
+      message: "Error WHile Getting Orders",
       error,
     });
   }
 };
+
 //orders
 export const getAllOrdersController = async (req, res) => {
   try {
@@ -220,13 +226,13 @@ export const getAllOrdersController = async (req, res) => {
       .find({})
       .populate("products", "-photo")
       .populate("buyer", "name")
-      .sort({ createdAt: "-1" });
+      .sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error WHile Geting Orders",
+      message: "Error While Getting Orders",
       error,
     });
   }
@@ -247,7 +253,25 @@ export const orderStatusController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error While Updateing Order",
+      message: "Error While Updating Order",
+      error,
+    });
+  }
+};
+
+
+// All Users
+export const getAllUsersController = async (req, res) => {
+  try {
+    const orders = await userModel
+      .find({}).select("-password").select("-answer")
+      
+    res.json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error While Getting Orders",
       error,
     });
   }

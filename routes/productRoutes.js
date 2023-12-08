@@ -15,7 +15,7 @@ import {
   searchProductController,
   updateProductController,
 } from "../controllers/productController.js";
-import { isAdmin, requireSignIn } from "./../middlewares/authMiddeware.js";
+import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 import formidable from "express-formidable";
 
 const router = express.Router();
@@ -46,7 +46,7 @@ router.get("/get-product/:slug", getSingleProductController);
 //get photo
 router.get("/product-photo/:pid", productPhotoController);
 
-//delete rproduct
+//delete product
 router.delete("/delete-product/:pid", deleteProductController);
 
 //filter product
